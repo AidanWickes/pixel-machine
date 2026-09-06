@@ -20,10 +20,14 @@ that edit has not been made, as it is a gated document.
 **Stated risk, accepted:** a project queued third behind two others is the
 project most likely never to be built. This is a bigger build than the kart
 tracker — it contains a language implementation — and it is scheduled last.
-The mitigation is that P1 is independently valuable and independently
+The mitigation was that P1 is independently valuable and independently
 demonstrable: a tested VM with no UI is a weekend-sized artefact that proves
-the interesting part. If Phase E keeps slipping, build P1 alone and decide
-again from there.
+the interesting part.
+
+**That mitigation was taken.** P1 was built standalone and banked on
+6 September 2026, ahead of P0 and ahead of Phase D. The interesting engineering
+now exists, is tested, and is demonstrable from a terminal. Everything from P0
+onwards remains queued behind the kart tracker and Actifind.
 
 ---
 
@@ -149,11 +153,11 @@ The harness that makes this meaningful:
 Gated at the phase level, chunked at the step level. Finish a phase, present
 it, wait for the go.
 
-**Build order note:** P1 runs first, standalone, ahead of P0. That is the
-escape hatch in the portfolio-position section taken deliberately — the machine
-needs no framework, no accounts and no deployment, so it can be built and
-proven while the rest of the project is still queued. P0 does not start until
-Phase E begins properly.
+**Build order note:** P1 ran first, standalone, ahead of P0 — the escape hatch
+in the portfolio-position section, taken deliberately. The machine needs no
+framework, no accounts and no deployment, so it was built and proven while the
+rest of the project stayed queued. P0 does not start until Phase E begins
+properly.
 
 ### P1 — The machine, headless  *(in progress)*
 
@@ -302,24 +306,51 @@ A real test with a real person, not a self-assessment.
 
 ## Current status
 
-**P1 complete.** Both languages
-parse; Blocks compiles to instructions with `REPEAT` emitting a real `JNZ`
-loop; the machine executes, faults and records replay frames; and programs run
-from the command line in either language, with `--asm` showing what Blocks
-became. The daily generator derives a puzzle from its date alone, solvable by
-construction. Fourteen lessons carry a learner from `FILL 3` to reading the
-screen back with `LOADI`, every par measured and locked by the suite.
+**P1 complete and banked. Work deliberately paused here.**
 
-Verified by 161 tests, `npm run check` green.
+Banked 6 September 2026. Both languages parse; Blocks compiles to instructions
+with `REPEAT` emitting a real `JNZ` loop; the machine executes, faults, caps
+runaway programs and records replay frames; the daily generator derives a
+puzzle from its date alone; and fourteen lessons carry a learner from `FILL 3`
+to reading the screen back with `LOADI`.
 
-**This is the escape hatch described under "Portfolio position".** P1 is a
-complete, standalone, tested artefact: a language implementation with a
-curriculum, usable from the command line. Continuing to P0 means starting the
-web application, which is the point at which this stops being a self-contained
-piece of work and becomes the third project competing for portfolio hours.
+161 tests, `npm run check` green, ~100% line coverage on `src/lib/machine`.
 
-Nothing else is scaffolded. P0 has not started and does not start until Phase D
-delivers.
+### What exists
+
+```
+src/lib/machine/     tokenise · parse · blocks · compile · assemble ·
+                     disassemble · execute · generate    (zero dependencies)
+src/lib/content/     lessons.ts — the curriculum
+bin/pixel.ts         command-line runner
+examples/            five programs, held to their pictures by the suite
+```
+
+### What does not exist
+
+No web application. No Next.js, no StyleX, no Supabase, no accounts, no
+leaderboard, no deployment. Everything from P0 onwards is unstarted by choice,
+not by oversight.
+
+### Resuming
+
+The next step is **P0.1**. Before starting it, re-read this plan and
+`design.md` — both were written before any code existed, and the machine's
+implementation may have taught us things the design does not yet reflect.
+
+Two things to check on resuming, because they were written but never run:
+
+- The Docker setup (`Dockerfile`, `compose.yaml`) has never been executed —
+  Docker was not installed on the machine that wrote it.
+- CI has run only against the committed workflow; the badge state should be
+  confirmed before relying on it.
+
+Two open decisions carried forward:
+
+- The master plan (`../../docs/plan.md`) still has no Phase E entry.
+- Whether the Next.js resolver copes with `.ts` import specifiers, which would
+  let the CLI run without `tsx`. Unverified, and the reason `tsx` is a
+  dependency at all.
 
 The original single-file workshop build (South Devon College Headstart taster,
 546 lines of HTML plus a Python twin) is the ancestor of this project and no

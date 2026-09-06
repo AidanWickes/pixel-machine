@@ -64,16 +64,20 @@ BBBBBBBB
 
 ## Status
 
-**The machine is complete and tested. There is no interface yet.**
+**P1 is complete and banked. There is no web interface yet, by choice.**
 
-The virtual machine is built and tested headless, ahead of any UI — it is the
-product, and building it first means the interface will be decoration over
-something already known to be correct.
+The virtual machine, both languages, the puzzle generator and the curriculum
+are built and tested headless, ahead of any UI. The machine is the product;
+building it first means the interface will be decoration over something already
+known to be correct.
+
+Everything runs from the command line today. The web application is the next
+phase and has not been started.
 
 | Phase | |
 |---|---|
 | **P1** The machine, headless | **complete** — 161 tests |
-| **P0** Scaffold (Next.js, StyleX, Supabase) | not started |
+| **P0** Scaffold (Next.js, StyleX, Supabase) | next |
 | **P2** Play surface | not started |
 | **P3** Tutorials | not started |
 | **P4** Accounts | not started |
@@ -93,11 +97,23 @@ Full breakdown with per-step acceptance criteria: [`docs/plan.md`](docs/plan.md)
 
 ```bash
 npm install
-npm test          # the suite
-npm run check     # typecheck + suite + coverage thresholds
 ```
 
-Node 24 or later.
+Node 24 or later. No other setup — the machine has zero runtime dependencies.
+
+### Verifying it works
+
+```bash
+npm test          # 161 tests
+npm run check     # typecheck + tests + coverage thresholds — the full gate
+npm run coverage  # tests with the coverage report
+npm run typecheck # types only
+```
+
+`npm run check` is the gate CI runs. It fails if types break, if any test
+fails, or if coverage of `src/lib/machine` drops below its thresholds.
+
+What those tests actually prove is described under [Testing](#testing).
 
 ### Run a program
 
@@ -263,9 +279,14 @@ to drift.
 - **Faults** — a runaway program returns a fault instead of hanging. This is a
   regression test with history: the ancestor of this project shipped a loop
   that froze the browser tab on every keystroke.
+- **Curriculum coverage** — every instruction in that same table is taught by
+  at least one lesson, so the course cannot leave a hole the learner falls into.
+- **Pars** — each lesson's reference solution is proved to draw its stated
+  target at exactly its stated cycle count. A par is a claim made to a stranger
+  who will chase it, so it is measured and locked rather than estimated.
 - **Coverage thresholds** on `src/lib/machine`, enforced in CI. Added after
   untested guards were found sitting in the executor while the suite stayed
-  green.
+  green — and it has since caught two more gaps the same way.
 
 ## Documentation
 
