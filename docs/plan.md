@@ -338,12 +338,14 @@ The next step is **P0.1**. Before starting it, re-read this plan and
 `design.md` — both were written before any code existed, and the machine's
 implementation may have taught us things the design does not yet reflect.
 
-Two things to check on resuming, because they were written but never run:
+One thing to check on resuming, because it was written but never observed:
 
-- The Docker setup (`Dockerfile`, `compose.yaml`) has never been executed —
-  Docker was not installed on the machine that wrote it.
 - CI has run only against the committed workflow; the badge state should be
   confirmed before relying on it.
+
+The Docker setup **is** verified: built and run on OrbStack, with `npm ci`
+completing as the unprivileged `node` user and all 161 tests passing inside the
+container.
 
 Two open decisions carried forward:
 

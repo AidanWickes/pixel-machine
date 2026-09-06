@@ -220,6 +220,9 @@ If you would rather npm never touched your machine, everything runs in a
 container instead. Dependencies install inside it, their lifecycle scripts run
 inside it, and `node_modules` lives in a Docker volume rather than on the host.
 
+Verified on OrbStack: `npm ci` completes as the unprivileged `node` user and the
+full suite passes inside the container.
+
 ```bash
 docker compose build
 docker compose run --rm app npm test

@@ -264,3 +264,10 @@ Rejected: a longer curriculum covering each instruction in isolation. Why: the
 arc matters more than the count — sequence, then loops, then strides, then
 nesting, then branching, then reading the screen back. Instructions are
 introduced where a picture needs them rather than for completeness.
+
+**Docker setup verified** — built and run on OrbStack 29.4.0. `npm ci` completes
+as the unprivileged `node` user, `npm run check` passes inside the container at
+the same 161 tests and coverage as the host, and the CLI renders correctly.
+Recorded because the setup was committed unverified: Docker was reachable at
+`/usr/local/bin/docker` but that directory was absent from the PATH of the shell
+that checked, which read as "not installed".
