@@ -179,11 +179,15 @@ No interface at all. Pure TypeScript, zero dependencies.
       in the terminal, so the machine is usable before any UI exists.
       *Done when:* the example programs run and are held to their pictures by
       the suite.
-- [ ] **P1.8 Blocks parser** — the five workshop commands, nested `REPEAT`.
+- [x] **P1.8 Blocks parser** — the five workshop commands, nested `REPEAT`.
       *Done when:* every original target program parses.
-- [ ] **P1.9 Blocks compiler** — Blocks to instructions.
+- [x] **P1.9 Blocks compiler** — Blocks to instructions.
       *Done when:* each original target draws its exact picture, and `REPEAT`
       is asserted to emit a `JNZ` loop rather than unrolled code.
+- [x] **P1.13 Disassembler** — instructions back to assembly source, so a
+      learner can see what their Blocks became. Beyond the original plan; added
+      because the compiler's output is the teaching artefact.
+      *Done when:* its output re-parses to the instructions it came from.
 - [ ] **P1.10 Daily generator** — seeded by date, generated backwards from a
       random program, with the quality gate.
       *Done when:* 500 synthetic dates each produce a puzzle that passes the
@@ -295,13 +299,15 @@ A real test with a real person, not a self-assessment.
 
 ## Current status
 
-**P1 in progress — P1.1 to P1.7 and P1.12 complete.** The machine parses,
-assembles, executes and faults correctly across all twelve opcodes, records
-replay frames, and runs from the command line. Verified by 82 tests with
-`npm run check` green and 100% line coverage on `src/lib/machine`.
+**P1 in progress — all steps complete except P1.10 and P1.11.** Both languages
+parse; Blocks compiles to instructions with `REPEAT` emitting a real `JNZ`
+loop; the machine executes, faults and records replay frames; and programs run
+from the command line in either language, with `--asm` showing what Blocks
+became. Verified by 112 tests with `npm run check` green and 100% line coverage
+on `src/lib/machine`.
 
-Remaining in P1: the Blocks parser and compiler, the daily generator, and the
-reference lessons with their golden pars.
+Remaining in P1: the daily generator and the reference lessons with their
+golden pars.
 
 Nothing else is scaffolded. P0 has not started and does not start until Phase D
 delivers.

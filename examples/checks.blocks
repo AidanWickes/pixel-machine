@@ -1,0 +1,8 @@
+; A chequerboard, in Blocks. FILL paints and moves; SKIP only moves.
+PEN R
+REPEAT 4 [
+  REPEAT 4 [ FILL 1 SKIP 1 ]
+  SKIP 1
+  REPEAT 3 [ FILL 1 SKIP 1 ]
+  FILL 1
+]

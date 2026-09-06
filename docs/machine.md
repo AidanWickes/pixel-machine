@@ -192,13 +192,29 @@ Register convention for compiled output:
 
 ```
 R0   cursor address
-R1   loop counter
+R1   loop counter, outer REPEAT
 R2   current pen colour
-R3   scratch
+R3   loop counter, inner REPEAT
 ```
 
 `REPEAT` compiles to a real `JNZ` loop rather than unrolled straight-line
 code — the reveal only works if the loop is visible in the output.
+
+**`FILL` unrolls** to `STORE`/`ADDI` pairs. That is fewer instructions *and*
+fewer cycles than a counted loop, it needs no counter register, and it leaves
+`REPEAT` as the only thing in the output that produces a `JNZ` — which sharpens
+the reveal rather than muddying it.
+
+**The cursor is tracked at compile time.** `ROW` must advance
+`8 - (pos mod 8)` cells, which would need a division the machine does not have;
+but every count in Blocks is a literal, so the position is always known and
+`ROW` becomes a single `ADDI`. Inside a `REPEAT` this only holds when the body's
+net displacement is a whole number of rows — otherwise `ROW` would move a
+different distance on each pass, and the compiler rejects it rather than
+emitting wrong output.
+
+**Two levels of `REPEAT`.** Nesting is bounded by the two spare registers, `R1`
+and `R3`. Deeper nesting is a compile error rather than silent corruption.
 
 ---
 
@@ -232,13 +248,19 @@ The day rolls at **00:00 UTC**, stated plainly in the interface.
 ## 9 · Module boundaries
 
 ```
-tokenise.ts   source → tokens
-parse.ts      tokens → AST (assembly and Blocks)
-compile.ts    Blocks AST → instructions
-assemble.ts   instructions ⇄ encoded words   (round-trips)
-execute.ts    words → { frames, cycles, grid, fault? }
-generate.ts   date → { grid, par, seed }
+tokenise.ts      source → tokens                    (shared by both languages)
+parse.ts         tokens → instructions              (assembly)
+blocks.ts        tokens → Block AST                 (Blocks)
+compile.ts       Block AST → instructions
+assemble.ts      instructions ⇄ encoded words       (round-trips)
+disassemble.ts   instructions → assembly source
+execute.ts       words → { frames, cycles, grid, fault? }
+generate.ts      date → { grid, par, seed }
 ```
+
+Blocks parsing lives in its own module rather than inside `parse.ts`. Two
+languages in one file would make it the largest thing in the project and blur
+which grammar an error belongs to.
 
 `src/lib/machine/` imports nothing. No React, no Next, no Supabase, no npm
 dependencies. That is what allows the identical code to run in the browser for

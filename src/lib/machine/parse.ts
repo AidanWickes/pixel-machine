@@ -19,7 +19,7 @@ export type ParseResult =
   | { ok: false; errors: ParseError[] };
 
 /** Operand shapes. See docs/machine.md §2. */
-type Form =
+export type Form =
   | 'none'
   | 'reg,imm'
   | 'reg,reg'
@@ -28,7 +28,7 @@ type Form =
   | 'reg,target'
   | 'target';
 
-const OPCODES: Record<string, { op: number; form: Form }> = {
+export const OPCODES: Record<string, { op: number; form: Form }> = {
   HALT: { op: 0x0, form: 'none' },
   LOAD: { op: 0x1, form: 'reg,imm' },
   LOADI: { op: 0x2, form: 'loadi' },

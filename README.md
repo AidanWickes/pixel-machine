@@ -72,7 +72,7 @@ something already known to be correct.
 
 | Phase | |
 |---|---|
-| **P1** The machine, headless | in progress — 8 of 12 steps |
+| **P1** The machine, headless | in progress — 11 of 13 steps |
 | **P0** Scaffold (Next.js, StyleX, Supabase) | not started |
 | **P2** Play surface | not started |
 | **P3** Tutorials | not started |
@@ -80,13 +80,11 @@ something already known to be correct.
 | **P5** Daily puzzle and leaderboard | not started |
 | **P6** Polish | not started |
 
-Done so far: tokeniser, assembly parser with labels, forward references and hex
-literals, assembler and decoder, executor with faults and a cycle cap, replay
-frames for the future transport, a command-line runner, and the verification
-harness.
+Done so far: both languages parsing, the Blocks compiler, assembler, decoder
+and disassembler, an executor with faults and a cycle cap, replay frames for
+the future transport, a command-line runner, and the verification harness.
 
-Next: the Blocks compiler, the daily puzzle generator, and the reference
-lessons.
+Next: the daily puzzle generator and the reference lessons.
 
 Full breakdown with per-step acceptance criteria: [`docs/plan.md`](docs/plan.md).
 
@@ -132,6 +130,42 @@ Programs that will not parse report the line and column rather than failing
 silently. The example programs in `examples/` are held to their pictures by the
 test suite, so they cannot quietly rot.
 
+### Two languages
+
+Blocks is the gentle on-ramp — the language from the original workshop. It
+compiles to the same instructions the assembly does, and `--asm` shows you
+exactly what it became:
+
+```bash
+npm run draw -- examples/stripes.blocks --asm
+```
+
+```
+REPEAT 4 [ FILL 8 ROW ]
+```
+
+```
+  ████████████████
+  · · · · · · · ·
+  ████████████████
+  · · · · · · · ·
+  ████████████████
+  · · · · · · · ·
+  ████████████████
+  · · · · · · · ·
+
+  compiled to:
+    ...
+   19  ADDI R0, 8
+   20  SUBI R1, 1
+   21  JNZ R1, 3
+   22  HALT
+```
+
+That last pair is the whole point of the curriculum: your `REPEAT` was a
+`JNZ` loop all along. Blocks never appears on the leaderboard — it exists to
+carry you to that moment, after which everything is assembly.
+
 ### Running in Docker
 
 If you would rather npm never touched your machine, everything runs in a
@@ -164,9 +198,10 @@ to avoid host npm entirely.
 ## How it is built
 
 ```
-Assembly ──→ parse ──┐
-                     ├──→ instructions ──→ assemble ──→ words ──→ execute()
-Blocks ───→ compile ─┘
+Assembly ──→ parse ───┐
+                      ├──→ instructions ──→ assemble ──→ words ──→ execute()
+Blocks ──→ compile ───┘                          │
+                                                 └──→ disassemble ──→ assembly
 ```
 
 One executor, several front ends. That is why "show me this as assembly" comes
@@ -185,7 +220,7 @@ to drift.
 
 ## Testing
 
-82 tests, 100% line coverage on the machine.
+112 tests, 100% line coverage on the machine.
 
 - **Conformance** — the suite parses the opcode table out of `docs/machine.md`
   and holds the implementation to it. Document an opcode without building it

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
-import { gridToRows, run } from './helpers.js';
+import { drawBlocks, gridToRows, run } from './helpers.js';
 
 /**
  * The example programs are documentation. If one stops drawing what it claims
@@ -54,5 +54,31 @@ describe('example programs', () => {
       'YYYYYYYY',
     ]);
     expect(result.fault).toBeUndefined();
+  });
+
+  test('stripes.blocks draws four stripes from four Blocks commands', () => {
+    expect(drawBlocks(example('stripes.blocks'))).toEqual([
+      'BBBBBBBB',
+      '........',
+      'BBBBBBBB',
+      '........',
+      'BBBBBBBB',
+      '........',
+      'BBBBBBBB',
+      '........',
+    ]);
+  });
+
+  test('checks.blocks draws a red chequerboard', () => {
+    expect(drawBlocks(example('checks.blocks'))).toEqual([
+      'R.R.R.R.',
+      '.R.R.R.R',
+      'R.R.R.R.',
+      '.R.R.R.R',
+      'R.R.R.R.',
+      '.R.R.R.R',
+      'R.R.R.R.',
+      '.R.R.R.R',
+    ]);
   });
 });

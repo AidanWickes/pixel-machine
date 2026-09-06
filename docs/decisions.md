@@ -191,3 +191,35 @@ The trade is a stale-dependency footgun: the volume survives rebuilds, so
 changing `package.json` needs `docker compose down -v` before the new packages
 appear. Documented in the README rather than solved, because the alternatives
 (reinstalling on every run, or no volume at all) cost more than the note does.
+
+**FILL unrolls; only REPEAT loops** — `FILL n` emits n `STORE`/`ADDI` pairs
+rather than a counted loop. Rejected: compiling FILL to a loop for symmetry with
+REPEAT. Why: unrolling is fewer instructions *and* fewer cycles than a counted
+loop, needs no counter register, and leaves REPEAT as the only construct in the
+output producing a `JNZ`. That sharpens the reveal the whole curriculum builds
+to instead of muddying it with loops the learner did not write.
+
+**Compile-time cursor tracking** — the compiler tracks the pen position and
+emits `ROW` as a single `ADDI`. Rejected: maintaining a column register at
+runtime; computing the row boundary with repeated subtraction. Why: `ROW` must
+advance `8 - (pos mod 8)` cells and the machine has no division, but every count
+in Blocks is a literal so the position is always known. Inside a `REPEAT` this
+holds only when the body's net displacement is a whole number of rows;
+otherwise the compiler rejects the program rather than emitting code that moves
+a different distance on each pass.
+
+**REPEAT nesting limited to two levels** — bounded by the spare registers `R1`
+and `R3`. Rejected: unrolling inner loops once registers run out. Why: a clear
+compile error beats silently changing the shape of the output a learner is
+being taught to read. Revisit if a lesson genuinely needs three levels.
+
+**Disassembler** — `disassemble.ts`, beyond the original P1 plan. Why: the
+compiler's output is the teaching artefact, so being unable to show it made the
+compiler only half-useful. Its test asserts the output re-parses to the
+instructions it came from, which catches operand-order mistakes that a
+golden-string test would not.
+
+**Blocks parsing in its own module** — `blocks.ts` rather than inside
+`parse.ts`, revising `machine.md` §9. Rejected: one parser file for both
+languages. Why: two grammars in one file would make it the largest module in
+the project and blur which language an error belongs to.
