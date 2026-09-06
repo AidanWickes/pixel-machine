@@ -3,6 +3,12 @@ import { decode } from './assemble.js';
 export const GRID_SIZE = 8;
 export const CELLS = GRID_SIZE * GRID_SIZE;
 export const MAX_CYCLES = 100_000;
+/**
+ * Recording is capped well below MAX_CYCLES so a runaway program cannot
+ * allocate a snapshot per cycle. Teaching programs run to tens or low
+ * hundreds of cycles, so the transport never notices the ceiling.
+ */
+export const MAX_FRAMES = 2_000;
 
 export interface Fault {
   message: string;
@@ -10,11 +16,31 @@ export interface Fault {
   at: number;
 }
 
+/** One executed instruction, recorded after its effect. */
+export interface Frame {
+  cycle: number;
+  /** Index of the instruction that ran. */
+  pc: number;
+  registers: number[];
+  /** Present only when this instruction painted a cell. */
+  write?: { address: number; colour: number };
+}
+
+export interface ExecOptions {
+  /**
+   * Record a frame per instruction, for the editor's transport. Off by
+   * default: server-side verification needs only the final grid and the
+   * cycle count, and should not pay to record a replay nobody watches.
+   */
+  frames?: boolean;
+}
+
 export interface ExecResult {
   grid: number[];
   registers: number[];
   cycles: number;
   fault?: Fault;
+  frames?: Frame[];
 }
 
 /**
@@ -23,17 +49,29 @@ export interface ExecResult {
  * Faults are returned, never thrown — a runaway program must be impossible
  * to write, because this runs on every keystroke in the editor.
  */
-export function execute(words: number[]): ExecResult {
+export function execute(words: number[], options?: ExecOptions): ExecResult {
   const grid = new Array<number>(CELLS).fill(0);
   const registers = [0, 0, 0, 0];
+  const frames: Frame[] | undefined = options?.frames ? [] : undefined;
   let pc = 0;
   let cycles = 0;
+
+  const record = (at: number, write?: Frame['write']) => {
+    if (!frames || frames.length >= MAX_FRAMES) return;
+    frames.push({
+      cycle: cycles,
+      pc: at,
+      registers: [...registers],
+      ...(write ? { write } : {}),
+    });
+  };
 
   const fault = (message: string, at: number): ExecResult => ({
     grid,
     registers,
     cycles,
     fault: { message, at },
+    ...(frames ? { frames } : {}),
   });
 
   for (;;) {
@@ -49,7 +87,8 @@ export function execute(words: number[]): ExecResult {
 
     switch (op) {
       case 0x0:
-        return { grid, registers, cycles };
+        record(at);
+        return { grid, registers, cycles, ...(frames ? { frames } : {}) };
       case 0x1:
         registers[rd] = imm;
         break;
@@ -92,7 +131,8 @@ export function execute(words: number[]): ExecResult {
           return fault(`STORE of colour ${colour}, but colours are 0-3`, at);
         }
         grid[address] = colour;
-        break;
+        record(at, { address, colour });
+        continue;
       }
       case 0x9:
         pc = imm;
@@ -106,5 +146,7 @@ export function execute(words: number[]): ExecResult {
       default:
         return fault(`unknown opcode 0x${op.toString(16)}`, at);
     }
+
+    record(at);
   }
 }

@@ -116,6 +116,27 @@ sub-millisecond to reach and orders of magnitude beyond any legitimate
 solution, so it doubles as the server's denial-of-service bound — execution is
 bounded by construction and needs no wall-clock timeout.
 
+### Replay frames
+
+`execute(words, { frames: true })` records one frame per executed instruction,
+for the editor's transport:
+
+```ts
+{ cycle, pc, registers, write?: { address, colour } }
+```
+
+`pc` is the instruction that ran, and the registers are its result, so a frame
+answers "what did this line just do".
+
+Recording is **opt-in and off by default**. Server-side verification needs only
+the final grid and the cycle count, and must not pay to build a replay nobody
+watches.
+
+`MAX_FRAMES = 2_000`, capped independently of `MAX_CYCLES`. A runaway program
+would otherwise allocate a snapshot per cycle. Teaching programs run to tens or
+low hundreds of cycles, so the ceiling is invisible in normal use; when it is
+hit, `frames.length` is less than `cycles` and the transport can say so.
+
 ---
 
 ## 6 · Errors

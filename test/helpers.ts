@@ -1,5 +1,9 @@
 import { assemble } from '../src/lib/machine/assemble.js';
-import { execute, type ExecResult } from '../src/lib/machine/execute.js';
+import {
+  execute,
+  type ExecOptions,
+  type ExecResult,
+} from '../src/lib/machine/execute.js';
 import { parse } from '../src/lib/machine/parse.js';
 
 const INK: Record<string, number> = { '.': 0, B: 1, R: 2, Y: 3 };
@@ -44,12 +48,12 @@ export function gridToRows(grid: number[]): string[] {
 }
 
 /** Parses, assembles and runs assembly source. Throws on a parse error. */
-export function run(source: string): ExecResult {
+export function run(source: string, options?: ExecOptions): ExecResult {
   const result = parse(source);
   if (!result.ok) {
     throw new Error(`parse failed:\n${JSON.stringify(result.errors, null, 2)}`);
   }
-  return execute(assemble(result.instructions));
+  return execute(assemble(result.instructions), options);
 }
 
 /** The picture a program draws, as rows — the form assertions should use. */

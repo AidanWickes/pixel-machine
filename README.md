@@ -72,7 +72,7 @@ something already known to be correct.
 
 | Phase | |
 |---|---|
-| **P1** The machine, headless | in progress — 5 of 11 steps |
+| **P1** The machine, headless | in progress — 8 of 12 steps |
 | **P0** Scaffold (Next.js, StyleX, Supabase) | not started |
 | **P2** Play surface | not started |
 | **P3** Tutorials | not started |
@@ -80,12 +80,13 @@ something already known to be correct.
 | **P5** Daily puzzle and leaderboard | not started |
 | **P6** Polish | not started |
 
-Done so far: tokeniser, assembly parser with labels and forward references,
-assembler and decoder, executor with faults and a cycle cap, and the
-verification harness.
+Done so far: tokeniser, assembly parser with labels, forward references and hex
+literals, assembler and decoder, executor with faults and a cycle cap, replay
+frames for the future transport, a command-line runner, and the verification
+harness.
 
-Next: hex immediates, replay frames, the Blocks compiler, the daily puzzle
-generator.
+Next: the Blocks compiler, the daily puzzle generator, and the reference
+lessons.
 
 Full breakdown with per-step acceptance criteria: [`docs/plan.md`](docs/plan.md).
 
@@ -98,6 +99,38 @@ npm run check     # typecheck + suite + coverage thresholds
 ```
 
 Node 24 or later.
+
+### Run a program
+
+There is no web interface yet — that is P2. Until then the machine runs from
+the command line:
+
+```bash
+npm run draw -- examples/border.asm
+npm run draw -- examples/diagonal.asm
+npm run draw -- -e "LOAD R2, RED
+                    LOAD R0, 27
+                    STORE R2, [R0]
+                    HALT"
+```
+
+```
+  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+  ▒▒· · · · · · ▒▒
+  ▒▒· · · · · · ▒▒
+  ▒▒· · · · · · ▒▒
+  ▒▒· · · · · · ▒▒
+  ▒▒· · · · · · ▒▒
+  ▒▒· · · · · · ▒▒
+  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+  122 cycles · 26 instructions
+  registers  R0=63  R1=0  R2=3  R3=0
+```
+
+Programs that will not parse report the line and column rather than failing
+silently. The example programs in `examples/` are held to their pictures by the
+test suite, so they cannot quietly rot.
 
 ## How it is built
 
@@ -123,7 +156,7 @@ to drift.
 
 ## Testing
 
-70 tests, 100% line coverage on the machine.
+82 tests, 100% line coverage on the machine.
 
 - **Conformance** — the suite parses the opcode table out of `docs/machine.md`
   and holds the implementation to it. Document an opcode without building it

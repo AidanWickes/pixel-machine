@@ -156,3 +156,24 @@ pointed at valid code. Found by the error-path tests the coverage gate forced.
 **Test runner** — Vitest 5. Rejected: pinning to the 3.x line already
 installed. Why: `@vitest/coverage-v8` must match the runner's major, and a
 project this young should not start a major version behind.
+
+**Replay frames** — recorded per executed instruction, opt-in via
+`execute(words, { frames: true })`, capped at `MAX_FRAMES = 2_000` independently
+of the cycle cap. Rejected: always recording; capping frames at `MAX_CYCLES`.
+Why: server-side verification needs only the final grid and the cycle count and
+should not pay to build a replay nobody watches; and a shared cap would let a
+runaway program allocate 100,000 snapshots. Teaching programs run to tens or low
+hundreds of cycles, so the ceiling is invisible in normal use.
+
+**Command-line runner** — `npm run draw`, with `tsx` as a dev dependency.
+Rejected: switching every import to `.ts` specifiers so Node could run the
+source directly with no dependency at all. Why: Node's type stripping does not
+resolve `.js` specifiers to `.ts` files, so running natively would mean
+`allowImportingTsExtensions` across the whole source, and how Next's resolver
+handles that at P0 is unverified. One dev-only dependency is the cheaper trade
+than planting an unknown in the phase the plan exists to de-risk.
+
+**Example programs** — `examples/*.asm`, asserted against their pictures in the
+suite. Rejected: keeping example code in the README only. Why: examples are
+documentation, and untested documentation drifts; holding them to their output
+means a broken example fails CI rather than misleading a reader.

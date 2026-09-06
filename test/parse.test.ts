@@ -61,3 +61,25 @@ describe('parse labels', () => {
     expect(result.ok && result.instructions[0]?.imm).toBe(2);
   });
 });
+
+describe('parse hex immediates', () => {
+  test('accepts 0x literals', () => {
+    const result = parse('LOAD R0, 0xFF');
+    expect(result.ok && result.instructions[0]?.imm).toBe(255);
+  });
+
+  test('accepts lowercase 0x literals', () => {
+    const result = parse('LOAD R1, 0x1f');
+    expect(result.ok && result.instructions[0]?.imm).toBe(31);
+  });
+
+  test('rejects a hex literal above 0xFF', () => {
+    const result = parse('LOAD R0, 0x100');
+    expect(result.ok).toBe(false);
+  });
+
+  test('rejects malformed hex', () => {
+    const result = parse('LOAD R0, 0xZZ');
+    expect(result.ok).toBe(false);
+  });
+});

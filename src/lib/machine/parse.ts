@@ -81,11 +81,12 @@ export function parse(source: string): ParseResult {
     const constant = token && CONSTANTS[token.text.toUpperCase()];
     if (constant !== undefined) return constant;
 
-    if (!token || !/^\d+$/.test(token.text)) {
+    const isHex = token !== undefined && /^0x[0-9a-f]+$/i.test(token.text);
+    if (!token || !(isHex || /^\d+$/.test(token.text))) {
       fail('expected a number', token);
       return null;
     }
-    const value = Number(token.text);
+    const value = isHex ? parseInt(token.text.slice(2), 16) : Number(token.text);
     if (value > 255) {
       fail('number must be 0-255', token);
       return null;

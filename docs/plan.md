@@ -169,11 +169,16 @@ No interface at all. Pure TypeScript, zero dependencies.
       *Done when:* a runaway program returns a fault instead of hanging.
 - [x] **P1.5 Test harness** — helpers, conformance, determinism, coverage
       thresholds, CI. *Done when:* `npm run check` passes.
-- [ ] **P1.6 Hex immediates** — `0x` literals per `machine.md` §4.
+- [x] **P1.6 Hex immediates** — `0x` literals per `machine.md` §4.
       *Done when:* `LOAD R0, 0xFF` parses to 255 and `0x100` is rejected.
-- [ ] **P1.7 Replay frames** — one snapshot per cycle for the transport.
-      *Done when:* frame count equals cycle count for a known program, and
-      memory stays bounded at the cycle cap.
+- [x] **P1.7 Replay frames** — one snapshot per instruction, opt-in, capped at
+      `MAX_FRAMES` independently of the cycle cap.
+      *Done when:* frame count equals cycle count for a known program, and a
+      runaway program stops recording well below the cycle cap.
+- [x] **P1.12 Command-line runner** — `npm run draw` renders a program's output
+      in the terminal, so the machine is usable before any UI exists.
+      *Done when:* the example programs run and are held to their pictures by
+      the suite.
 - [ ] **P1.8 Blocks parser** — the five workshop commands, nested `REPEAT`.
       *Done when:* every original target program parses.
 - [ ] **P1.9 Blocks compiler** — Blocks to instructions.
@@ -290,12 +295,13 @@ A real test with a real person, not a self-assessment.
 
 ## Current status
 
-**P1 in progress — P1.1 to P1.5 complete.** The machine parses, assembles,
-executes and faults correctly across all twelve opcodes, verified by 70 tests
-with `npm run check` green and 100% line coverage on `src/lib/machine`.
+**P1 in progress — P1.1 to P1.7 and P1.12 complete.** The machine parses,
+assembles, executes and faults correctly across all twelve opcodes, records
+replay frames, and runs from the command line. Verified by 82 tests with
+`npm run check` green and 100% line coverage on `src/lib/machine`.
 
-Remaining in P1: hex immediates, replay frames, the Blocks parser and compiler,
-the daily generator, and the reference lessons with their golden pars.
+Remaining in P1: the Blocks parser and compiler, the daily generator, and the
+reference lessons with their golden pars.
 
 Nothing else is scaffolded. P0 has not started and does not start until Phase D
 delivers.
