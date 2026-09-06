@@ -1,3 +1,25 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+.next/
+out/
+*.tsbuildinfo
+
+# Test output
+coverage/
+
+# Environment — Supabase keys land here from P0 onward. Never commit these.
+.env
+.env.*
+!.env.example
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
 .DS_Store
+Thumbs.db
