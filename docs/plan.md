@@ -188,8 +188,8 @@ No interface at all. Pure TypeScript, zero dependencies.
       learner can see what their Blocks became. Beyond the original plan; added
       because the compiler's output is the teaching artefact.
       *Done when:* its output re-parses to the instructions it came from.
-- [ ] **P1.10 Daily generator** — seeded by date, generated backwards from a
-      random program, with the quality gate.
+- [x] **P1.10 Daily generator** — seeded by date, generated backwards from a
+      random Blocks program, with the quality gate.
       *Done when:* 500 synthetic dates each produce a puzzle that passes the
       gate and is reproduced identically on a second call.
 - [ ] **P1.11 Reference lessons and pars** — the lesson data and its golden
@@ -299,15 +299,14 @@ A real test with a real person, not a self-assessment.
 
 ## Current status
 
-**P1 in progress — all steps complete except P1.10 and P1.11.** Both languages
+**P1 in progress — only P1.11 remains.** Both languages
 parse; Blocks compiles to instructions with `REPEAT` emitting a real `JNZ`
 loop; the machine executes, faults and records replay frames; and programs run
 from the command line in either language, with `--asm` showing what Blocks
-became. Verified by 112 tests with `npm run check` green and 100% line coverage
-on `src/lib/machine`.
+became. The daily generator derives a puzzle from its date alone, solvable by
+construction. Verified by 122 tests with `npm run check` green.
 
-Remaining in P1: the daily generator and the reference lessons with their
-golden pars.
+Remaining in P1: the reference lessons with their golden pars.
 
 Nothing else is scaffolded. P0 has not started and does not start until Phase D
 delivers.

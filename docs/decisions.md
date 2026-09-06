@@ -223,3 +223,23 @@ golden-string test would not.
 `parse.ts`, revising `machine.md` §9. Rejected: one parser file for both
 languages. Why: two grammars in one file would make it the largest module in
 the project and blur which language an error belongs to.
+
+**Daily puzzles generate Blocks, not assembly** — the generator builds a random
+Blocks program, compiles it, and runs it. Rejected: generating random assembly.
+Why: random assembly mostly faults or draws nothing, so candidates would be
+valid by luck; Blocks always terminates and always produces picture-like output,
+making every candidate valid by construction. Par is then the compiled
+program's cycle count — an honest upper bound, since compiled Blocks is not
+optimal and a hand-written assembly solution can beat it.
+
+**Puzzle variety comes from the period** — how many rows pass before the picture
+repeats, drawn from 2, 3, 4 or 8. Rejected: the first implementation, which only
+used periods 2 and 3. Why: every puzzle came out as horizontal banding — the
+grids differed but the *kind* of picture never did, so a week of dailies would
+look identical. Caught by inspecting real output rather than by the suite, which
+only asserted the quality gate; a variety test now guards it.
+
+**Gate exhaustion returns the best attempt** — after 50 rejected rolls the last
+candidate is returned anyway. Rejected: widening the gate, or failing outright.
+Why: a dull puzzle beats no puzzle, and the gate expresses a preference rather
+than a correctness requirement. No date in 500 has needed it.

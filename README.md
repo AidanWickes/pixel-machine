@@ -72,7 +72,7 @@ something already known to be correct.
 
 | Phase | |
 |---|---|
-| **P1** The machine, headless | in progress — 11 of 13 steps |
+| **P1** The machine, headless | in progress — 12 of 13 steps |
 | **P0** Scaffold (Next.js, StyleX, Supabase) | not started |
 | **P2** Play surface | not started |
 | **P3** Tutorials | not started |
@@ -84,7 +84,7 @@ Done so far: both languages parsing, the Blocks compiler, assembler, decoder
 and disassembler, an executor with faults and a cycle cap, replay frames for
 the future transport, a command-line runner, and the verification harness.
 
-Next: the daily puzzle generator and the reference lessons.
+Next: the reference lessons and their verified pars, which completes P1.
 
 Full breakdown with per-step acceptance criteria: [`docs/plan.md`](docs/plan.md).
 
@@ -166,6 +166,22 @@ That last pair is the whole point of the curriculum: your `REPEAT` was a
 `JNZ` loop all along. Blocks never appears on the leaderboard — it exists to
 carry you to that moment, after which everything is assembly.
 
+### The daily puzzle
+
+Every day's puzzle is derived from its date by a pure function — no database,
+no cron job, no coordination. The browser and the server compute the identical
+puzzle from the date alone.
+
+```bash
+npm run draw -- --daily
+npm run draw -- --daily 2026-12-25
+```
+
+It is generated *backwards*: build a random Blocks program, run it, and whatever
+it draws is the puzzle. Solvable by construction, and par falls out free as the
+generating program's cycle count. Par is an upper bound, not a proven optimum —
+which is why it is presented as "beat it".
+
 ### Running in Docker
 
 If you would rather npm never touched your machine, everything runs in a
@@ -220,7 +236,7 @@ to drift.
 
 ## Testing
 
-112 tests, 100% line coverage on the machine.
+122 tests, ~100% line coverage on the machine.
 
 - **Conformance** — the suite parses the opcode table out of `docs/machine.md`
   and holds the implementation to it. Document an opcode without building it

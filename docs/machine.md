@@ -226,14 +226,24 @@ client and server.
 
 1. Hash the date string into a seed; drive a small seeded PRNG (implemented
    inline — this does not justify a dependency).
-2. Generate a random valid **program**, biased toward interesting output:
-   loops with varying strides, two or three colours.
+2. Generate a random valid **Blocks program**. Blocks, not assembly: it always
+   terminates and always produces picture-like output, so every candidate is
+   valid by construction rather than by luck.
+
+   Rows are built from runs of `FILL` and `SKIP` summing to exactly 8, so the
+   cursor lands on the next row without needing `ROW`. A *period* — how many
+   rows pass before the picture repeats — is drawn from 2, 3, 4 or 8, and the
+   repeating block is wrapped in a `REPEAT`. Small periods give banded pictures
+   that compress well; period 8 gives every row its own pattern and no loop at
+   all. Mixing them is what stops every day looking alike.
 3. Execute it. **Whatever it draws is the puzzle** — solvable by construction,
    with no solver search required anywhere in the system.
-4. Quality gate: reject if fewer than 12 or more than 56 cells are lit, if
-   fewer than two colours are used, or if the result is a solid block. Reject
-   means re-roll with an incremented counter, bounded at 50 attempts before
-   the gates relax.
+4. Quality gate: reject if fewer than 12 or more than 56 cells are lit, or if
+   fewer than two colours are used. A solid grid is 64 lit and so is already
+   excluded. Reject means re-roll with an incremented seed, bounded at 50
+   attempts, after which the best attempt so far is returned — a dull puzzle
+   beats no puzzle, and the gate is a preference rather than a correctness
+   requirement.
 5. Return `{ grid, par, seed }`, where `par` is the generating program's cycle
    count.
 

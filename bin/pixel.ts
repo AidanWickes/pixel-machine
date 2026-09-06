@@ -13,6 +13,7 @@ import { parseBlocks } from '../src/lib/machine/blocks.js';
 import { compile } from '../src/lib/machine/compile.js';
 import { disassemble } from '../src/lib/machine/disassemble.js';
 import { execute } from '../src/lib/machine/execute.js';
+import { generateDaily } from '../src/lib/machine/generate.js';
 import { parse, type Instruction, type ParseError } from '../src/lib/machine/parse.js';
 
 const INK = ['· ', '██', '▓▓', '▒▒'];
@@ -22,6 +23,7 @@ const USAGE = [
   '  npm run draw -- <file.asm|file.blocks> [--asm]',
   '  npm run draw -- -e "<assembly source>" [--asm]',
   '  npm run draw -- -b "<blocks source>" [--asm]',
+  '  npm run draw -- --daily [YYYY-MM-DD]',
   '',
   '  --asm   also print the assembly the program becomes',
   '',
@@ -58,10 +60,26 @@ function build(source: string, blocks: boolean): Instruction[] | number {
   return compiled.ok ? compiled.instructions : report('compile error', compiled.errors);
 }
 
+function daily(dateISO: string): number {
+  const puzzle = generateDaily(dateISO);
+  console.log();
+  console.log(`  Daily puzzle — ${dateISO} (rolls at 00:00 UTC)`);
+  console.log();
+  console.log(render(puzzle.grid));
+  console.log();
+  console.log(`  reference solution: ${puzzle.par} cycles — beat it`);
+  console.log();
+  return 0;
+}
+
 function main(argv: string[]): number {
   const showAsm = argv.includes('--asm');
   const args = argv.filter((arg) => arg !== '--asm');
   const [first, second] = args;
+
+  if (first === '--daily') {
+    return daily(second ?? new Date().toISOString().slice(0, 10));
+  }
 
   if (!first || first === '--help' || first === '-h') {
     console.log(USAGE);

@@ -49,3 +49,11 @@ describe('disassemble', () => {
     );
   });
 });
+
+describe('disassemble edge cases', () => {
+  test('marks an opcode outside the instruction set rather than crashing', () => {
+    expect(disassemble([{ op: 0xf, rd: 0, rs: 0, imm: 0, line: 1 }])).toEqual([
+      '  0  ???',
+    ]);
+  });
+});
