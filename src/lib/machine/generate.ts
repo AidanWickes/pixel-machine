@@ -1,12 +1,18 @@
 import { assemble } from './assemble.js';
-import { parseBlocks } from './blocks.js';
+import { countBlocks, parseBlocks } from './blocks.js';
 import { compile } from './compile.js';
 import { execute } from './execute.js';
 
 export interface DailyPuzzle {
   grid: number[];
-  /** Cycles the generating program took. An upper bound, not a proven optimum. */
+  /**
+   * Commands in the reference solution, in assembly. Scoring is on commands
+   * written, not cycles run. An upper bound, not a proven optimum — the
+   * generator compiles from Blocks, and hand-written assembly beats it.
+   */
   par: number;
+  /** Cycles the reference solution took. Shown alongside, never scored. */
+  cycles: number;
   seed: number;
   /** The generating Blocks program. Server-side only — never send this out. */
   source: string;
@@ -105,7 +111,9 @@ function buildSource(rand: () => number): string {
  * mean a generator bug, but the function is public because running Blocks and
  * getting a grid back is useful on its own.
  */
-export function runBlocks(source: string): { grid: number[]; par: number } | null {
+export function runBlocks(
+  source: string,
+): { grid: number[]; cycles: number; instructions: number; commands: number } | null {
   const parsed = parseBlocks(source);
   if (!parsed.ok) return null;
   const compiled = compile(parsed.blocks);
@@ -113,7 +121,12 @@ export function runBlocks(source: string): { grid: number[]; par: number } | nul
 
   const result = execute(assemble(compiled.instructions));
   if (result.fault) return null;
-  return { grid: result.grid, par: result.cycles };
+  return {
+    grid: result.grid,
+    cycles: result.cycles,
+    instructions: compiled.instructions.length,
+    commands: countBlocks(parsed.blocks),
+  };
 }
 
 function passesGate(grid: number[]): boolean {
@@ -140,7 +153,13 @@ export function generateDaily(dateISO: string): DailyPuzzle {
     const drawn = runBlocks(source);
     if (!drawn) continue;
 
-    const puzzle = { grid: drawn.grid, par: drawn.par, seed, source };
+    const puzzle = {
+      grid: drawn.grid,
+      par: drawn.instructions,
+      cycles: drawn.cycles,
+      seed,
+      source,
+    };
     last = puzzle;
     if (passesGate(drawn.grid)) return puzzle;
   }

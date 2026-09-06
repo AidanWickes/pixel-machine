@@ -271,3 +271,27 @@ the same 161 tests and coverage as the host, and the CLI renders correctly.
 Recorded because the setup was committed unverified: Docker was reachable at
 `/usr/local/bin/docker` but that directory was absent from the PATH of the shell
 that checked, which read as "not installed".
+
+**Scoring metric reversed — commands, not cycles** — a solution scores
+`100 × par / commands`, capped at 100, measured on commands written rather than
+cycles executed. This **reverses** the earlier "one board, cycles executed"
+decision. Why: the original workshop scored on instruction count — its
+`countInstructions`, its "par 15", and an answer-key script that failed unless
+the count matched exactly — so command count is the metric already validated on
+real students. It is also what a beginner means by "steps": the size of the
+program you wrote, not the work the machine did running it.
+
+What the earlier decision got right is kept: cycles are still measured and still
+displayed beside the command count, because the contrast is the lesson. A
+`REPEAT` that is three commands to write costs eighty cycles to run.
+
+The known cost of the reversal is that command count rewards a tight loop over
+straight-line code regardless of how long it runs. The cycle cap bounds the
+abuse, and "write less code" is the more intuitive lesson for the audience.
+
+**Score caps at 100; rankings do not** — beating par still scores 100, and the
+leaderboard ranks on raw command count. Rejected: letting the score exceed 100.
+Why: par is a reference solution rather than a proven optimum, so beating it
+should read as success rather than produce a number above full marks. But a
+capped score would tie everyone at the top of a leaderboard, so the table ranks
+on the uncapped count.

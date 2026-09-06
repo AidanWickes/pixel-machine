@@ -125,3 +125,15 @@ export function parseBlocks(source: string): BlocksResult {
   const blocks = body(false);
   return errors.length > 0 ? { ok: false, errors } : { ok: true, blocks };
 }
+
+/**
+ * How many commands a Blocks program contains — what the learner typed, not
+ * what it compiles to. A REPEAT counts as one command plus its body.
+ */
+export function countBlocks(blocks: Block[]): number {
+  return blocks.reduce(
+    (total, block) =>
+      total + 1 + (block.kind === 'repeat' ? countBlocks(block.body) : 0),
+    0,
+  );
+}

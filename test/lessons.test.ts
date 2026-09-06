@@ -1,19 +1,31 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import { LESSONS, type Lesson } from '../src/lib/content/lessons.js';
+import { score } from '../src/lib/score.js';
+import { countBlocks, parseBlocks } from '../src/lib/machine/blocks.js';
 import { runBlocks } from '../src/lib/machine/generate.js';
+import { parse } from '../src/lib/machine/parse.js';
 import { gridToRows, run } from './helpers.js';
 
-/** Runs a lesson's reference solution in whichever language it is written in. */
-function reference(lesson: Lesson): { rows: string[]; cycles: number } {
+/**
+ * Runs a lesson's reference solution in whichever language it is written in.
+ * `commands` is what the learner types — Blocks commands, or assembly
+ * instructions — which is what par measures and what the score is based on.
+ */
+function reference(lesson: Lesson): { rows: string[]; commands: number } {
   if (lesson.language === 'blocks') {
+    const parsed = parseBlocks(lesson.solution);
+    if (!parsed.ok) throw new Error(`${lesson.id}: solution does not parse`);
     const result = runBlocks(lesson.solution);
     if (!result) throw new Error(`${lesson.id}: solution does not compile`);
-    return { rows: gridToRows(result.grid), cycles: result.par };
+    return { rows: gridToRows(result.grid), commands: countBlocks(parsed.blocks) };
   }
+
+  const parsed = parse(lesson.solution);
+  if (!parsed.ok) throw new Error(`${lesson.id}: solution does not parse`);
   const result = run(lesson.solution);
   if (result.fault) throw new Error(`${lesson.id}: ${result.fault.message}`);
-  return { rows: gridToRows(result.grid), cycles: result.cycles };
+  return { rows: gridToRows(result.grid), commands: parsed.instructions.length };
 }
 
 /** The mnemonics a solution actually uses, ignoring labels and comments. */
@@ -59,8 +71,12 @@ describe('every reference solution', () => {
     expect(reference(lesson).rows).toEqual(lesson.target);
   });
 
-  test.each(LESSONS)('$id costs exactly its stated par', (lesson) => {
-    expect(reference(lesson).cycles).toBe(lesson.par);
+  test.each(LESSONS)('$id uses exactly its stated par in commands', (lesson) => {
+    expect(reference(lesson).commands).toBe(lesson.par);
+  });
+
+  test.each(LESSONS)('$id scores full marks against its own par', (lesson) => {
+    expect(score(reference(lesson).commands, lesson.par)).toBe(100);
   });
 
   test.each(LESSONS.filter((lesson) => lesson.requires))(

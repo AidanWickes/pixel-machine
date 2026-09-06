@@ -7,7 +7,7 @@ export default defineConfig({
     testTimeout: 10_000,
     coverage: {
       provider: 'v8',
-      include: ['src/lib/machine/**/*.ts'],
+      include: ['src/lib/**/*.ts'],
       reporter: ['text-summary'],
       // The machine is pure logic the leaderboard's honesty depends on.
       // Earlier in this project untested guards sat in execute.ts while the

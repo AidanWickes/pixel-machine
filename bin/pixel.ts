@@ -70,7 +70,8 @@ function daily(dateISO: string): number {
   console.log();
   console.log(render(puzzle.grid));
   console.log();
-  console.log(`  reference solution: ${puzzle.par} cycles — beat it`);
+  console.log(`  reference solution: ${puzzle.par} commands — beat it`);
+  console.log(`  (it runs in ${puzzle.cycles} cycles; scoring is on commands)`);
   console.log();
   return 0;
 }
@@ -82,7 +83,7 @@ function listLessons(): number {
   for (const [index, lesson] of LESSONS.entries()) {
     const number = String(index + 1).padStart(2);
     console.log(
-      `  ${number}. ${lesson.id.padEnd(22)} ${lesson.language.padEnd(8)} par ${String(lesson.par).padStart(3)}  ${lesson.title}`,
+      `  ${number}. ${lesson.id.padEnd(22)} ${lesson.language.padEnd(8)} par ${String(lesson.par).padStart(2)} commands  ${lesson.title}`,
     );
   }
   console.log();
@@ -99,7 +100,7 @@ function showLesson(id: string): number {
   const grid = lesson.target.flatMap((row) => [...row].map((c) => INK_OF[c as keyof typeof INK_OF]));
 
   console.log();
-  console.log(`  ${lesson.title}  (${lesson.language}, par ${lesson.par})`);
+  console.log(`  ${lesson.title}  (${lesson.language}, par ${lesson.par} commands)`);
   console.log(`  ${lesson.brief}`);
   console.log();
   console.log(render(grid));
@@ -170,7 +171,7 @@ function main(argv: string[]): number {
   if (result.fault) {
     console.log(`  fault at instruction ${result.fault.at}: ${result.fault.message}`);
   }
-  console.log(`  ${result.cycles} cycles · ${built.length} instructions`);
+  console.log(`  ${built.length} commands · ${result.cycles} cycles`);
   console.log(`  registers  ${result.registers.map((r, i) => `R${i}=${r}`).join('  ')}`);
   console.log();
 

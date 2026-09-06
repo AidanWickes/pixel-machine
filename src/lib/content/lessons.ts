@@ -1,8 +1,8 @@
 /**
  * The curriculum. Each lesson states its target picture as eight rows — that is
  * the specification, written by hand — plus a reference solution that must draw
- * it. `par` is the reference solution's measured cycle count, locked by the test
- * suite so it cannot drift.
+ * it. `par` is the reference solution's measured command count, locked by the
+ * test suite so it cannot drift.
  *
  * Adding a lesson is one object. `requires` names mnemonics the solution must
  * use, for lessons that teach a specific instruction rather than a shape.
@@ -18,6 +18,11 @@ export interface Lesson {
   /** Eight rows of eight: '.' off, 'B' blue, 'R' red, 'Y' yellow. */
   target: string[];
   solution: string;
+  /**
+   * Commands in the reference solution — what the learner types, not cycles the
+   * machine runs. A REPEAT counts as one command plus its body. Measured, then
+   * locked by the suite.
+   */
   par: number;
   requires?: string[];
 }
@@ -37,7 +42,7 @@ export const LESSONS: Lesson[] = [
     starter: 'FILL 1',
     target: empty(['BBB.....']),
     solution: 'FILL 3',
-    par: 9,
+    par: 1,
   },
   {
     id: 'skipping',
@@ -49,7 +54,7 @@ export const LESSONS: Lesson[] = [
     starter: 'FILL 2',
     target: empty(['BB..BB..']),
     solution: 'FILL 2 SKIP 2 FILL 2',
-    par: 12,
+    par: 3,
   },
   {
     id: 'going-down',
@@ -61,7 +66,7 @@ export const LESSONS: Lesson[] = [
     starter: 'FILL 4\nROW',
     target: empty(['BBBB....', '....BBBB']),
     solution: 'FILL 4 ROW SKIP 4 FILL 4',
-    par: 21,
+    par: 4,
   },
   {
     id: 'repeating',
@@ -82,7 +87,7 @@ export const LESSONS: Lesson[] = [
       '........',
     ],
     solution: 'REPEAT 4 [ FILL 8 ROW ]',
-    par: 80,
+    par: 3,
   },
   {
     id: 'first-store',
@@ -160,7 +165,7 @@ export const LESSONS: Lesson[] = [
       'JNZ R1, loop',
       'HALT',
     ].join('\n'),
-    par: 36,
+    par: 8,
     requires: ['JNZ', 'SUBI'],
   },
   {
@@ -182,7 +187,7 @@ export const LESSONS: Lesson[] = [
       'JNZ R1, loop',
       'HALT',
     ].join('\n'),
-    par: 36,
+    par: 8,
   },
   {
     id: 'diagonal',
@@ -212,7 +217,7 @@ export const LESSONS: Lesson[] = [
       'JNZ R1, loop',
       'HALT',
     ].join('\n'),
-    par: 36,
+    par: 8,
   },
   {
     id: 'nested-loops',
@@ -237,7 +242,7 @@ export const LESSONS: Lesson[] = [
       'JNZ R1, row',
       'HALT',
     ].join('\n'),
-    par: 84,
+    par: 12,
   },
   {
     id: 'test-at-the-top',
@@ -259,7 +264,7 @@ export const LESSONS: Lesson[] = [
       'JMP check',
       'done: HALT',
     ].join('\n'),
-    par: 35,
+    par: 9,
     requires: ['JZ', 'JMP'],
   },
   {
@@ -282,7 +287,7 @@ export const LESSONS: Lesson[] = [
       'JNZ R1, loop',
       'HALT',
     ].join('\n'),
-    par: 37,
+    par: 9,
     requires: ['ADD', 'SUB'],
   },
   {

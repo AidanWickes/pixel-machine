@@ -23,7 +23,7 @@ hidden machinery. Small enough to hold in your head, complete enough to be real.
 | **Cell values** | `0` off · `1` blue · `2` red · `3` yellow |
 | **Instructions** | `HALT` `LOAD` `LOADI` `MOV` `ADD` `ADDI` `SUB` `SUBI` `STORE` `JMP` `JNZ` `JZ` |
 | **Encoding** | fixed 16-bit words — `[opcode:4][rd:2][rs:2][imm:8]` |
-| **Cost** | one cycle per instruction executed |
+| **Cost** | one cycle per instruction executed; scoring counts commands written |
 
 There is no `INC`, no `CMP`, no multiply. A loop is a `SUBI` and a `JNZ` —
 discovering that is the whole point.
@@ -211,8 +211,14 @@ npm run draw -- --lesson nested-loops
 ```
 
 Every lesson states its target picture by hand, and the suite proves the
-reference solution draws exactly that at exactly its stated par. A par is a
+reference solution draws exactly that in exactly its stated par. A par is a
 claim made to a stranger, so it is measured and locked rather than estimated.
+
+**Scoring is on commands written, not cycles run** — `100 × par / commands`,
+capped at 100. That is what a beginner means by "steps", and it is the metric
+the original workshop used. Cycles are still measured and shown beside the
+command count, because the contrast is the lesson: the stripes program is three
+commands to write and eighty cycles to run.
 
 ### Running in Docker
 
@@ -230,6 +236,16 @@ docker compose run --rm app npm run check
 docker compose run --rm app npm run draw -- examples/border.asm
 docker compose run --rm app bash          # a shell in the container
 ```
+
+When you are done, shut it all down:
+
+```bash
+docker compose down --remove-orphans      # containers and network
+docker compose down --remove-orphans -v   # …and the node_modules volume
+```
+
+Plain `down` does not remove one-off `run` containers, which then block the
+network from being removed — hence `--remove-orphans`.
 
 Source is bind-mounted, so edits on the host take effect immediately without
 rebuilding.
@@ -285,8 +301,9 @@ to drift.
 - **Curriculum coverage** — every instruction in that same table is taught by
   at least one lesson, so the course cannot leave a hole the learner falls into.
 - **Pars** — each lesson's reference solution is proved to draw its stated
-  target at exactly its stated cycle count. A par is a claim made to a stranger
-  who will chase it, so it is measured and locked rather than estimated.
+  target in exactly its stated number of commands, and to score 100 against its
+  own par. A par is a claim made to a stranger who will chase it, so it is
+  measured and locked rather than estimated.
 - **Coverage thresholds** on `src/lib/machine`, enforced in CI. Added after
   untested guards were found sitting in the executor while the suite stayed
   green — and it has since caught two more gaps the same way.

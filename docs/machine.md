@@ -111,6 +111,11 @@ A branch not taken still costs a cycle. `HALT` costs a cycle. The number the
 leaderboard shows is therefore exactly the number of instructions the machine
 carried out, which is what a beginner already assumes "steps" means.
 
+**Cycles are measured and displayed, but they are not what is scored.** Scoring
+is on *commands written* — see `src/lib/score.ts`. Cycles remain the honest
+measure of what the machine did, and showing both is the point: a `REPEAT` that
+is three commands to write can be eighty cycles to run.
+
 `MAX_CYCLES = 100_000`. Exceeding it is a fault, not a silent stop. The cap is
 sub-millisecond to reach and orders of magnitude beyond any legitimate
 solution, so it doubles as the server's denial-of-service bound — execution is
@@ -244,12 +249,14 @@ client and server.
    attempts, after which the best attempt so far is returned — a dull puzzle
    beats no puzzle, and the gate is a preference rather than a correctness
    requirement.
-5. Return `{ grid, par, seed }`, where `par` is the generating program's cycle
-   count.
+5. Return `{ grid, par, cycles, seed }`, where `par` is the generating
+   program's **command count** once compiled to assembly, and `cycles` is what
+   it cost to run. Par is what the score is measured against.
 
-`par` is an upper bound and is presented as one: *"reference solution: 47
-cycles — beat it"*. Claiming optimality would be a lie, and the honest framing
-is the better hook anyway.
+`par` is an upper bound and is presented as one: *"reference solution: 23
+commands — beat it"*. Claiming optimality would be a lie, and the honest framing
+is the better hook anyway. It is generous, too: the reference comes from
+compiled Blocks, and hand-written assembly beats it comfortably.
 
 The day rolls at **00:00 UTC**, stated plainly in the interface.
 

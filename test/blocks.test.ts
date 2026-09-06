@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { parseBlocks } from '../src/lib/machine/blocks.js';
+import { countBlocks, parseBlocks } from '../src/lib/machine/blocks.js';
 
 const blocksOf = (source: string) => {
   const result = parseBlocks(source);
@@ -84,5 +84,22 @@ describe('parseBlocks errors', () => {
 
   test('rejects a stray closing bracket', () => {
     expect(errorsOf('FILL 1 ]')[0]?.message).toMatch(/unexpected '\]'/);
+  });
+});
+
+describe('countBlocks', () => {
+  const count = (source: string) => countBlocks(blocksOf(source));
+
+  test('counts each command the learner wrote', () => {
+    expect(count('FILL 3')).toBe(1);
+    expect(count('FILL 4 ROW SKIP 4 FILL 4')).toBe(4);
+  });
+
+  test('counts REPEAT itself, plus the commands in its body', () => {
+    expect(count('REPEAT 4 [ FILL 8 ROW ]')).toBe(3);
+  });
+
+  test('counts nested REPEAT bodies too', () => {
+    expect(count('REPEAT 2 [ REPEAT 3 [ ROW ] ]')).toBe(3);
   });
 });

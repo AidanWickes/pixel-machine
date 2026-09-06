@@ -43,7 +43,8 @@ onwards remains queued behind the kart tracker and Actifind.
   lessons only, culminating in the reveal that `REPEAT` compiles to `JNZ`.
 - A daily puzzle, procedurally generated from the date, identical for everyone.
 - Accounts, profiles, and per-lesson progress tracking.
-- One daily leaderboard ranked on cycles executed, verified server-side.
+- A score out of 100 per puzzle, measured on commands written against par.
+- One daily leaderboard ranked on raw command count, verified server-side.
 - Light and dark themes; accessible by construction, not by retrofit.
 
 ## What v1 is not
@@ -104,6 +105,10 @@ The client submits **source, never a score**. `/api/daily/submit`:
 5. parse, assemble, execute under the cycle cap
 6. compare the resulting grid to the target
 7. upsert only if it beats the user's existing row
+
+Scoring is on **commands written**, not cycles executed: `score = 100 × par /
+used`, capped at 100. The score is for the learner. Ranking uses the raw command
+count, which has no ceiling — a capped score would tie everyone who reaches par.
 
 `daily_scores` is readable by its owner alone and writable by nothing on the
 client; all writes go through the route handler on the service role. The

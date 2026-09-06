@@ -32,10 +32,13 @@ describe('generateDaily', () => {
     }
   });
 
-  test('par is the cycle count of the generating program', () => {
+  test('par is the command count of the reference solution, and beatable', () => {
     for (const date of DATES.slice(0, 100)) {
       const puzzle = generateDaily(date);
       expect(puzzle.par).toBeGreaterThan(0);
+      // Scoring is on commands, but cycles stay available to display. They are
+      // equal when the program has no loop, and larger whenever it does.
+      expect(puzzle.cycles).toBeGreaterThanOrEqual(puzzle.par);
     }
   });
 
@@ -80,6 +83,6 @@ describe('runBlocks', () => {
   test('reports the grid and cycle count for source that runs', () => {
     const result = runBlocks('PEN R FILL 3');
     expect(result?.grid.slice(0, 4)).toEqual([2, 2, 2, 0]);
-    expect(result?.par).toBeGreaterThan(0);
+    expect(result?.commands).toBeGreaterThan(0);
   });
 });
