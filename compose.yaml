@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    init: true
+    working_dir: /app
+    volumes:
+      # Source is bind-mounted, so edits on the host are seen immediately.
+      - .:/app
+      # …but node_modules must NOT come from the host. This named volume keeps
+      # the container's linux binaries, and stops the bind mount above from
+      # shadowing them with the host's darwin ones.
+      - node_modules:/app/node_modules
+
+volumes:
+  node_modules:

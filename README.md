@@ -132,6 +132,35 @@ Programs that will not parse report the line and column rather than failing
 silently. The example programs in `examples/` are held to their pictures by the
 test suite, so they cannot quietly rot.
 
+### Running in Docker
+
+If you would rather npm never touched your machine, everything runs in a
+container instead. Dependencies install inside it, their lifecycle scripts run
+inside it, and `node_modules` lives in a Docker volume rather than on the host.
+
+```bash
+docker compose build
+docker compose run --rm app npm test
+docker compose run --rm app npm run check
+docker compose run --rm app npm run draw -- examples/border.asm
+docker compose run --rm app bash          # a shell in the container
+```
+
+Source is bind-mounted, so edits on the host take effect immediately without
+rebuilding.
+
+**After changing dependencies**, rebuild and discard the volume — otherwise the
+named `node_modules` volume keeps serving the old packages:
+
+```bash
+docker compose down -v && docker compose build
+```
+
+Shorthands exist for each of these (`npm run docker:test`, `docker:check`,
+`docker:draw`, `docker:shell`, `docker:reset`), though they run npm on the host
+to invoke Docker. Use the raw `docker compose` commands above if the point is
+to avoid host npm entirely.
+
 ## How it is built
 
 ```

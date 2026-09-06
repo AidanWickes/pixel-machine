@@ -8,7 +8,13 @@
     "coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run coverage",
-    "draw": "tsx bin/pixel.ts"
+    "draw": "tsx bin/pixel.ts",
+    "docker:build": "docker compose build",
+    "docker:test": "docker compose run --rm app npm test",
+    "docker:check": "docker compose run --rm app npm run check",
+    "docker:draw": "docker compose run --rm app npm run draw --",
+    "docker:shell": "docker compose run --rm app bash",
+    "docker:reset": "docker compose down -v && docker compose build"
   },
   "devDependencies": {
     "@types/node": "^26.4.1",

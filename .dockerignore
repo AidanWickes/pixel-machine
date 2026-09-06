@@ -1,0 +1,17 @@
+# Never copy the host's node_modules into the image — it holds darwin-arm64
+# binaries that cannot run on linux.
+node_modules/
+
+.git/
+.github/
+coverage/
+dist/
+.next/
+out/
+*.tsbuildinfo
+.env
+.env.*
+.DS_Store
+Dockerfile
+.dockerignore
+compose.yaml

@@ -177,3 +177,17 @@ than planting an unknown in the phase the plan exists to de-risk.
 suite. Rejected: keeping example code in the README only. Why: examples are
 documentation, and untested documentation drifts; holding them to their output
 means a broken example fails CI rather than misleading a reader.
+
+**Containerised development** — a `node:24-slim` image with `node_modules` in a
+named Docker volume, source bind-mounted. Rejected: Alpine; running as root;
+letting the bind mount carry `node_modules`. Why: npm installs and executes
+third-party lifecycle scripts, and a container is where that should happen
+rather than on the host. Debian slim because esbuild and rolldown ship prebuilt
+binaries per libc and glibc is the better-trodden path. The named volume is not
+optional — bind-mounting the project over `/app` would otherwise shadow the
+container's linux binaries with the host's darwin ones.
+
+The trade is a stale-dependency footgun: the volume survives rebuilds, so
+changing `package.json` needs `docker compose down -v` before the new packages
+appear. Documented in the README rather than solved, because the alternatives
+(reinstalling on every run, or no volume at all) cost more than the note does.
