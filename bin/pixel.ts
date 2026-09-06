@@ -14,6 +14,7 @@ import { compile } from '../src/lib/machine/compile.js';
 import { disassemble } from '../src/lib/machine/disassemble.js';
 import { execute } from '../src/lib/machine/execute.js';
 import { generateDaily } from '../src/lib/machine/generate.js';
+import { LESSONS } from '../src/lib/content/lessons.js';
 import { parse, type Instruction, type ParseError } from '../src/lib/machine/parse.js';
 
 const INK = ['· ', '██', '▓▓', '▒▒'];
@@ -24,6 +25,8 @@ const USAGE = [
   '  npm run draw -- -e "<assembly source>" [--asm]',
   '  npm run draw -- -b "<blocks source>" [--asm]',
   '  npm run draw -- --daily [YYYY-MM-DD]',
+  '  npm run draw -- --lessons',
+  '  npm run draw -- --lesson <id>',
   '',
   '  --asm   also print the assembly the program becomes',
   '',
@@ -72,6 +75,42 @@ function daily(dateISO: string): number {
   return 0;
 }
 
+const INK_OF = { '.': 0, B: 1, R: 2, Y: 3 } as const;
+
+function listLessons(): number {
+  console.log();
+  for (const [index, lesson] of LESSONS.entries()) {
+    const number = String(index + 1).padStart(2);
+    console.log(
+      `  ${number}. ${lesson.id.padEnd(22)} ${lesson.language.padEnd(8)} par ${String(lesson.par).padStart(3)}  ${lesson.title}`,
+    );
+  }
+  console.log();
+  return 0;
+}
+
+function showLesson(id: string): number {
+  const lesson = LESSONS.find((candidate) => candidate.id === id);
+  if (!lesson) {
+    console.error(`No lesson '${id}'. Try: npm run draw -- --lessons`);
+    return 1;
+  }
+
+  const grid = lesson.target.flatMap((row) => [...row].map((c) => INK_OF[c as keyof typeof INK_OF]));
+
+  console.log();
+  console.log(`  ${lesson.title}  (${lesson.language}, par ${lesson.par})`);
+  console.log(`  ${lesson.brief}`);
+  console.log();
+  console.log(render(grid));
+  console.log();
+  if (lesson.hint) console.log(`  hint: ${lesson.hint}\n`);
+  console.log('  starting from:');
+  for (const line of lesson.starter.split('\n')) console.log(`    ${line}`);
+  console.log();
+  return 0;
+}
+
 function main(argv: string[]): number {
   const showAsm = argv.includes('--asm');
   const args = argv.filter((arg) => arg !== '--asm');
@@ -79,6 +118,16 @@ function main(argv: string[]): number {
 
   if (first === '--daily') {
     return daily(second ?? new Date().toISOString().slice(0, 10));
+  }
+
+  if (first === '--lessons') return listLessons();
+
+  if (first === '--lesson') {
+    if (!second) {
+      console.error('Which lesson? Try: npm run draw -- --lessons');
+      return 1;
+    }
+    return showLesson(second);
   }
 
   if (!first || first === '--help' || first === '-h') {

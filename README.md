@@ -64,7 +64,7 @@ BBBBBBBB
 
 ## Status
 
-**Early. The machine works; there is no interface yet.**
+**The machine is complete and tested. There is no interface yet.**
 
 The virtual machine is built and tested headless, ahead of any UI — it is the
 product, and building it first means the interface will be decoration over
@@ -72,7 +72,7 @@ something already known to be correct.
 
 | Phase | |
 |---|---|
-| **P1** The machine, headless | in progress — 12 of 13 steps |
+| **P1** The machine, headless | **complete** — 161 tests |
 | **P0** Scaffold (Next.js, StyleX, Supabase) | not started |
 | **P2** Play surface | not started |
 | **P3** Tutorials | not started |
@@ -80,11 +80,12 @@ something already known to be correct.
 | **P5** Daily puzzle and leaderboard | not started |
 | **P6** Polish | not started |
 
-Done so far: both languages parsing, the Blocks compiler, assembler, decoder
-and disassembler, an executor with faults and a cycle cap, replay frames for
-the future transport, a command-line runner, and the verification harness.
+P1 is done: both languages parsing, the Blocks compiler, assembler, decoder and
+disassembler, an executor with faults and a cycle cap, replay frames for the
+future transport, the date-seeded daily generator, fourteen lessons with
+measured pars, a command-line runner, and the verification harness.
 
-Next: the reference lessons and their verified pars, which completes P1.
+Next is P0 — the web application scaffold.
 
 Full breakdown with per-step acceptance criteria: [`docs/plan.md`](docs/plan.md).
 
@@ -182,6 +183,21 @@ it draws is the puzzle. Solvable by construction, and par falls out free as the
 generating program's cycle count. Par is an upper bound, not a proven optimum —
 which is why it is presented as "beat it".
 
+### The lessons
+
+Fourteen lessons carry you from painting three pixels to reading the screen back
+into a register. Four are in Blocks, ten in assembly, and between them they use
+every instruction in the set.
+
+```bash
+npm run draw -- --lessons
+npm run draw -- --lesson nested-loops
+```
+
+Every lesson states its target picture by hand, and the suite proves the
+reference solution draws exactly that at exactly its stated par. A par is a
+claim made to a stranger, so it is measured and locked rather than estimated.
+
 ### Running in Docker
 
 If you would rather npm never touched your machine, everything runs in a
@@ -236,7 +252,7 @@ to drift.
 
 ## Testing
 
-122 tests, ~100% line coverage on the machine.
+161 tests, ~100% line coverage on the machine.
 
 - **Conformance** — the suite parses the opcode table out of `docs/machine.md`
   and holds the implementation to it. Document an opcode without building it

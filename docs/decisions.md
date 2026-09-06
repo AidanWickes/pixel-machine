@@ -243,3 +243,24 @@ only asserted the quality gate; a variety test now guards it.
 candidate is returned anyway. Rejected: widening the gate, or failing outright.
 Why: a dull puzzle beats no puzzle, and the gate expresses a preference rather
 than a correctness requirement. No date in 500 has needed it.
+
+**Lesson targets are written by hand; pars are measured** — each lesson states
+its target picture as eight rows, and the suite proves the reference solution
+draws exactly that at exactly the recorded par. Rejected: deriving the target
+from the solution. Why: a hand-written target is the specification and can
+disagree with a wrong solution, which is the whole point of the check; deriving
+it would make the test tautological. Pars are the opposite — a measured property
+of the reference solution, recorded so the suite catches drift rather than a
+number anyone guessed.
+
+**Curriculum coverage is enforced** — a test reads the opcode table from
+`machine.md` and fails if any instruction is never used by a lesson solution.
+Rejected: reviewing coverage by eye. Why: a curriculum that never reaches an
+instruction leaves a hole the learner falls into later, and the same
+document-driven approach already guards the implementation.
+
+**Fourteen lessons, Blocks first** — four Blocks lessons, then ten in assembly.
+Rejected: a longer curriculum covering each instruction in isolation. Why: the
+arc matters more than the count — sequence, then loops, then strides, then
+nesting, then branching, then reading the screen back. Instructions are
+introduced where a picture needs them rather than for completeness.

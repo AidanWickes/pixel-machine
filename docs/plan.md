@@ -192,10 +192,13 @@ No interface at all. Pure TypeScript, zero dependencies.
       random Blocks program, with the quality gate.
       *Done when:* 500 synthetic dates each produce a puzzle that passes the
       gate and is reproduced identically on a second call.
-- [ ] **P1.11 Reference lessons and pars** — the lesson data and its golden
-      tests. *Done when:* every lesson solution hits its stated par exactly.
+- [x] **P1.11 Reference lessons and pars** — 14 lessons: four in Blocks, ten in
+      assembly, covering every instruction in the set.
+      *Done when:* every lesson solution hits its stated par exactly.
 
-**Gate:** `npm run check` green; every par verified rather than claimed.
+**Gate: passed.** `npm run check` green across 161 tests; every par measured
+and locked, and a coverage test proves the curriculum reaches all twelve
+opcodes.
 
 ### P0 — Scaffold  *(deferred until Phase E starts)*
 
@@ -299,14 +302,21 @@ A real test with a real person, not a self-assessment.
 
 ## Current status
 
-**P1 in progress — only P1.11 remains.** Both languages
+**P1 complete.** Both languages
 parse; Blocks compiles to instructions with `REPEAT` emitting a real `JNZ`
 loop; the machine executes, faults and records replay frames; and programs run
 from the command line in either language, with `--asm` showing what Blocks
 became. The daily generator derives a puzzle from its date alone, solvable by
-construction. Verified by 122 tests with `npm run check` green.
+construction. Fourteen lessons carry a learner from `FILL 3` to reading the
+screen back with `LOADI`, every par measured and locked by the suite.
 
-Remaining in P1: the reference lessons with their golden pars.
+Verified by 161 tests, `npm run check` green.
+
+**This is the escape hatch described under "Portfolio position".** P1 is a
+complete, standalone, tested artefact: a language implementation with a
+curriculum, usable from the command line. Continuing to P0 means starting the
+web application, which is the point at which this stops being a self-contained
+piece of work and becomes the third project competing for portfolio hours.
 
 Nothing else is scaffolded. P0 has not started and does not start until Phase D
 delivers.
